@@ -110,8 +110,8 @@ PrepDoubletDecon <- function(
   row.names(x = groups) <- as.character(x = colnames(x = counts)[2:ncol(x = counts)])
 
   if (!is.null(output.dir)) {
-    write.table(expression, file = file.path(output.dir, 'ICGS_expression.txt'), sep = '\t')
-    write.table(allgenes, file = file.path(output.dir, 'ICGS_fullExpression.txt'), sep = '\t')
+    write.table(counts, file = file.path(output.dir, 'ICGS_expression.txt'), sep = '\t')
+    write.table(full.counts, file = file.path(output.dir, 'ICGS_fullExpression.txt'), sep = '\t')
     write.table(groups, file = file.path(output.dir, 'ICGS_groups.txt'), sep = '\t', col.names = F)
   }
 
