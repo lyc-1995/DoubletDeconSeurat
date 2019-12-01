@@ -1,0 +1,42 @@
+Package: DoubletDeconSeurat
+Type: Package
+Title: Seurat wrappers with DoubletDecon
+Version: 0.1.0
+Authors@R: c(person(given = 'Yuchen', family = 'Lee', email = 'Yuchen_Lee1995@163.com', role = c('aut', 'cre')))
+Maintainer: Yuchen Lee <Yuchen_Lee1995@163.com>
+Description: Seurat wrappers with DoubletDecon. See DePasquale, E. A., Schnell, D. J., Van Camp, P. J., Valiente-Alandí, Í., Blaxall, B. C., Grimes, H. L., ... & Salomonis, N. (2019). DoubletDecon: Deconvoluting Doublets from Single-Cell RNA-Sequencing Data. Cell reports, 29(6), 1718-1727.
+Depends:
+    R (>= 3.5.0),
+    methods,
+Imports:
+    Seurat (>= 3.1.1),
+    plyr,
+    tidyr,
+    dplyr,
+    gplots,
+    DeconRNASeq,
+    MCL,
+    clusterProfiler,
+    R.utils,
+    foreach,
+    doParallel,
+    stringr
+License: GPL
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.1
+Collate: 
+    'BlacklistGroups.R'
+    'CleanUpInput.R'
+    'DDheatmap.R'
+    'ICGS2toICGS1.R'
+    'IsDoublet.R'
+    'Main_Doublet_Decon.R'
+    'internal.R'
+    'PrepDoubletDecon.R'
+    'PseudoMarkerFinder.R'
+    'Recluster.R'
+    'RemoveCellCycle.R'
+    'Renumber.R'
+    'SyntheticDoublets.R'
+    'as.color.R'
