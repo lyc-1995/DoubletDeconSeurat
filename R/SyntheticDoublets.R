@@ -9,7 +9,7 @@
 #' @param num_doubs The user defined number of doublets to make for each pair of clusters
 #' @param only50 Use only synthetic doublets created with 50\%/50\% mix of parent cells, as opposed to the extended option of 30\%/70\% and 70\%/30\%, default is TRUE.
 #' @param location Directory where output should be stored
-#' @param seed Set a random seed. If set NULL, will not use random seed.
+#' @param seed Set a random seed.
 #'
 #' @return averagesAverages = average deconvolution profiles for each combination of cell types.
 #' @return doubletCellsInput2 = deconvolution profiles for synthetic doublet cells (for quality control).
