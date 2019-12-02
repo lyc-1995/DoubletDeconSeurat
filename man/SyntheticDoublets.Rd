@@ -30,7 +30,7 @@ SyntheticDoublets(
 
 \item{location}{Directory where output should be stored}
 
-\item{seed}{Set a random seed, default is 100.}
+\item{seed}{Set a random seed, default is 100. If set NULL, will not use random seed.}
 }
 \value{
 averagesAverages = average deconvolution profiles for each combination of cell types.
