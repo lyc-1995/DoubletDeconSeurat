@@ -18,7 +18,7 @@
 #' @param num_doubs The user defined number of doublets to make for each pair of clusters. Default is 100.
 #' @param only50 use only synthetic doublets created with 50\%/50\% mix of parent cells, as opposed to the extended option of 30\%/70\% and 70\%/30\%, default is FALSE.
 #' @param min_uniq minimum number of unique genes required for a cluster to be rescued
-#' @param seed Set a random seed, default is 100. If set NULL, will not use random seed.
+#' @param seed Set a random seed. If set NULL, will not use random seed.
 #'
 #' @return data_processed = new expression file (cleaned).
 #' @return groups_processed = new groups file (cleaned).
@@ -50,7 +50,7 @@ DoubletDecon <- function(
   num_doubs = 100,
   only50 = FALSE,
   min_uniq = 4,
-  seed = 100
+  seed = NULL
 ){
 
   #load required packages

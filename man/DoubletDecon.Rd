@@ -21,7 +21,7 @@ DoubletDecon(
   num_doubs = 100,
   only50 = FALSE,
   min_uniq = 4,
-  seed = 100
+  seed = NULL
 )
 }
 \arguments{
@@ -57,7 +57,7 @@ DoubletDecon(
 
 \item{min_uniq}{minimum number of unique genes required for a cluster to be rescued}
 
-\item{seed}{Set a random seed, default is 100. If set NULL, will not use random seed.}
+\item{seed}{Set a random seed. If set NULL, will not use random seed.}
 }
 \value{
 data_processed = new expression file (cleaned).
