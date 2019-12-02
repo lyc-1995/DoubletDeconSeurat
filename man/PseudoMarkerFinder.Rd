@@ -14,8 +14,6 @@ PseudoMarkerFinder(groups, redu_data2, full_data2, min_uniq = 4)
 \item{full_data2}{cleaned full expression matrix from CleanUpInput.}
 
 \item{min_uniq}{minimum number of unique genes required for a cluster to be rescued}
-
-\item{log_file_name}{used for saving run notes to log file}
 }
 \value{
 new_table - non-doublet clusters, as determined by the "Remove" and "Rescue" steps.

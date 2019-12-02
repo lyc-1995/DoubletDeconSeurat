@@ -320,7 +320,7 @@ DoubletDecon <- function(
                                main = paste0('Non-Doublets: ', filename))) #main title
   }
   #last message
-  message('Finished!')
+  message('Finished!', '/n')
   return(list(data_processed = data,
               groups_processed = groups,
               DRS_doublet_table = doubletTable$isADoublet,
