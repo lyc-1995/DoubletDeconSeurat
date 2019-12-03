@@ -5,6 +5,7 @@
 #' @param isADoublet isADoublet data.frame from IsDoublet.
 #' @param data Processed data from CleanUpInput (or RemoveCellCycle).
 #' @param groups Processed groups file from CleanUpInput.
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return newData2 - processed expression and groups file, reordered, with correct new cluster numbers.
 #' @return decon - DeconCalledFreq table with all doublets 100 percent doublet and all non doublets at 0 percent doublet frequency.
@@ -16,7 +17,8 @@
 Recluster <- function(
   isADoublet,
   data,
-  groups
+  groups,
+  log_file_name
 ) {
   #Get list of doublet samples
   doubletCells <- row.names(subset(isADoublet, isADoublet == TRUE))
@@ -55,9 +57,9 @@ Recluster <- function(
   #create new reordered expression file for return
   newData <- data[, match(row.names(x = newGroups), colnames(x = data)) ]
   if (colnames(x = data)[1] %in% 'row_clusters.flat' || colnames(x = data)[1] %in% 'row_clusters-flat') {
-    newData2 <- CleanUpInput(newData, newGroups, data[2:nrow(x = data), 1])
+    newData2 <- CleanUpInput(newData, newGroups, data[2:nrow(x = data), 1], log_file_name = log_file_name)
   } else {
-    newData2 <- CleanUpInput(newData, newGroups, rowClusters = NULL)
+    newData2 <- CleanUpInput(newData, newGroups, rowClusters = NULL, log_file_name = log_file_name)
   }
   return(list(newData2 = newData2, decon = DeconCalledFreq))
 }

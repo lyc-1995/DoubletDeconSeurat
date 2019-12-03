@@ -6,6 +6,7 @@
 #' @param newMedoids New combined medoids from BlacklistGroups.
 #' @param groups Processed groups file from CleanUpInput.
 #' @param synthProfiles Average profiles of synthetic doublets from SyntheticDoublets.
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return isADoublet - data.frame with each cell as a row and whether it is called a doublet by deconvolution analysis.
 #' @return resultsreadable - data.frame with results of deconvolution analysis (cell by cluster) in percentages.
@@ -18,7 +19,8 @@ IsDoublet <- function(
   data,
   newMedoids,
   groups,
-  synthProfiles
+  synthProfiles,
+  log_file_name
 ) {
   #create data frame to store doublets table
   isADoublet <- data.frame(matrix(ncol = 4, nrow = (ncol(x = data) - 1)))
@@ -76,6 +78,7 @@ IsDoublet <- function(
   isADoublet[, 4] <- groups[, 2]
   colnames(x = isADoublet) <- c('Distance','Cell_Types', 'isADoublet', 'Group_Cluster')
 
-  message(paste0(length(which(isADoublet$isADoublet == TRUE)), '/', nrow(x = isADoublet),  " possible doublets removed"))
+  message(paste0(length(which(isADoublet$isADoublet == TRUE)), '/', nrow(x = isADoublet),  ' possible doublets removed'))
+  cat(paste0(length(which(isADoublet$isADoublet == TRUE)), '/', nrow(x = isADoublet),  ' possible doublets removed'), file = log_file_name, append = TRUE, sep = '\n')
   return(list(isADoublet = isADoublet, resultsreadable = resultsreadable))
 }

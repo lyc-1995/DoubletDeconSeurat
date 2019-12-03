@@ -4,7 +4,7 @@
 \alias{Recluster}
 \title{Recluster}
 \usage{
-Recluster(isADoublet, data, groups)
+Recluster(isADoublet, data, groups, log_file_name)
 }
 \arguments{
 \item{isADoublet}{isADoublet data.frame from IsDoublet.}
@@ -12,6 +12,8 @@ Recluster(isADoublet, data, groups)
 \item{data}{Processed data from CleanUpInput (or RemoveCellCycle).}
 
 \item{groups}{Processed groups file from CleanUpInput.}
+
+\item{log_file_name}{used for saving run notes to log file}
 }
 \value{
 newData2 - processed expression and groups file, reordered, with correct new cluster numbers.

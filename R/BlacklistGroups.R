@@ -6,6 +6,7 @@
 #' @param groups Processed groups file from CleanUpInput
 #' @param rhop x in mean+x*SD to determine upper cutoff for correlation in the blacklist. Default is 1.
 #' @param centroid_flag use centroids if data is sparse
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return newMedoids - new medoids data.frame for the new combined blacklisted clusters.
 #' @return newGroups - new groups file containing cluster assignment based on new combined blacklisted clusters.
@@ -18,7 +19,8 @@ BlacklistGroups <- function(
   data,
   groups,
   rhop,
-  centroid_flag
+  centroid_flag,
+  log_file_name
 ) {
   #Step 1: calculate medoids
   medoids <- data.frame(rep(NA, nrow(x = data) - 1))
@@ -105,5 +107,6 @@ BlacklistGroups <- function(
   newGroups <- newGroups[, -1]
 
   message(paste0('New blacklisted clusters: ', paste(unique(newGroups[, 2]), sep = "' '", collapse = ", ")))
+  cat(paste0('New blacklisted clusters: ', paste(unique(newGroups[, 2]), sep = "' '", collapse = ", ")), file = log_file_name, append = TRUE, sep = "\n")
   return(list(newMedoids = newMedoids, newGroups = newGroups))
 }

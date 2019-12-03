@@ -4,6 +4,7 @@
 #'
 #' @param rawDataFile ICGS expression or counts file (in ICGS expression file format).
 #' @param groupsFile ICGS groups file.
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return processed - data.frame of genes by samples with a row of cell clusters (column_clusters-flat) and a column of gene clusters (row_clusters-flat) when available.
 #' @return groups - groups file with cell names matching the expression file.
@@ -14,7 +15,8 @@
 #'
 ICGS2toICGS1 <- function(
   rawDataFile,
-  groupsFile
+  groupsFile,
+  log_file_name = NULL
 ) {
   #pull ICGS2 header (or have it fed in)
   exp.header <- read.table(rawDataFile, sep = '\t', nrows = 1, stringsAsFactors = FALSE, row.names = 1)
@@ -49,6 +51,9 @@ ICGS2toICGS1 <- function(
   #match the useless groups names to the good groups names and put these groups into the row-clusters_flat column.
   exp.ICGS[2:nrow(x = exp.ICGS), 1] <- as.numeric(x = mapvalues(groups.names[2:length(x = groups.names)], unique(groups.names[2:length(x = groups.names)]), unique(groups.ICGS[, 1])))
 
+  if(!is.null(log_file_name)){
+    cat('ICGS2 file formatted', file = log_file_name, append = TRUE, sep = '\n')
+  }
   message('ICGS2 file formatted')
 
   #return the new expression and groups files

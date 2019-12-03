@@ -5,6 +5,7 @@
 #' @param rawData ICGS expression or counts file (in ICGS expression file format).
 #' @param groups ICGS groups file.
 #' @param rowClusters Optional vector containing row cluster information (used by Recluster). Default is NULL.
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return processed - data.frame of genes by samples with a row of cell clusters (column_clusters-flat) and a column of gene clusters (row_clusters-flat) when available.
 #' @return groups - groups file with cell names matching the expression file.
@@ -16,17 +17,18 @@
 CleanUpInput <- function(
   rawData,
   groups,
-  rowClusters = NULL
-){
+  rowClusters = NULL,
+  log_file_name
+) {
   if (row.names(x = rawData)[1] %in% "column_clusters-flat" && (colnames(x = rawData)[1] %in% "row_clusters.flat" || colnames(x = rawData)[1] %in% "row_clusters-flat")) {
     #standard ICGS, contains column and row clusters
-    rawDataStrip <- rawData[-1,]
+    rawDataStrip <- rawData[-1, ]
     processed <- rbind(c(NA, groups[, 1]), rawDataStrip) #replace with provided groups file
     row.names(x = processed)[1] <- 'column_clusters-flat'
   } else if (row.names(x = rawData)[1] %in% "column_clusters-flat") {
     #only has column clusters
-    rawDataStrip <- rawData[-1,]
-    processed <- rbind(groups[,1],rawDataStrip) #replace with provided groups file
+    rawDataStrip <- rawData[-1, ]
+    processed <- rbind(groups[, 1], rawDataStrip) #replace with provided groups file
     row.names(x = processed)[1] <- 'column_clusters-flat'
     processed <- cbind(rep(NA, nrow(x = processed)), processed)
     colnames(processed)[1] <- "row_clusters.flat"
@@ -53,7 +55,10 @@ CleanUpInput <- function(
   if (is.na(processed[2, 1]) == FALSE) {
     processed[2:nrow(x = processed), 1] <- Renumber(processed[2:nrow(x = processed), 1])
   }
-  message(paste0(ncol(x = processed) - 2, " samples after processing"))
-  message(paste0(nrow(x = processed) - 2, " genes after processing"))
+
+  cat(paste0(ncol(processed)-2, ' samples after processing'), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0(nrow(processed)-2, ' genes after processing'), file = log_file_name, append = TRUE, sep = '\n')
+  message(paste0(ncol(x = processed) - 2, ' samples after processing'))
+  message(paste0(nrow(x = processed) - 2, ' genes after processing'))
   return(list(processed = processed, groups = groups))
 }

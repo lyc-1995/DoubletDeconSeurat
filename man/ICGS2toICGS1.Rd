@@ -4,12 +4,14 @@
 \alias{ICGS2toICGS1}
 \title{ICGS2_to_ICGS1}
 \usage{
-ICGS2toICGS1(rawDataFile, groupsFile)
+ICGS2toICGS1(rawDataFile, groupsFile, log_file_name = NULL)
 }
 \arguments{
 \item{rawDataFile}{ICGS expression or counts file (in ICGS expression file format).}
 
 \item{groupsFile}{ICGS groups file.}
+
+\item{log_file_name}{used for saving run notes to log file}
 }
 \value{
 processed - data.frame of genes by samples with a row of cell clusters (column_clusters-flat) and a column of gene clusters (row_clusters-flat) when available.

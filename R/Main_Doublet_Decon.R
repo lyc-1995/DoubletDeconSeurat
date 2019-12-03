@@ -40,7 +40,7 @@ DoubletDecon <- function(
   location,
   fullDataFile = NULL,
   removeCC = FALSE,
-  species = "mmu",
+  species = 'mmu',
   rhop = 1,
   write = TRUE,
   PMF = TRUE,
@@ -54,7 +54,7 @@ DoubletDecon <- function(
 ){
 
   #load required packages
-  message("Loading packages")
+  message('Loading packages')
   suppressMessages(require(DeconRNASeq))
   suppressMessages(require(gplots))
   suppressMessages(require(plyr))
@@ -67,6 +67,24 @@ DoubletDecon <- function(
   suppressMessages(require(foreach)) #for new PMF
   suppressMessages(require(doParallel)) #for new PMF
   suppressMessages(require(stringr)) #for new PMF
+
+  #Set up log file
+  log_file_name = file.path(location, filename,'.log')
+  log_con <- file(log_file_name)
+  cat(paste0('filename: ', filename), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('location: ', location), file = log_file_name, append=TRUE, sep = '\n')
+  cat(paste0('removeCC: ', removeCC), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('species: ', species), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('rhop: ', rhop), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('write: ', write), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('PMF: ', PMF), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('useFull: ', useFull), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('heatmap: ', heatmap), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('centroids: ', centroids), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('num_doubs: ', num_doubs), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('only50: ', only50), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('min_uniq: ', min_uniq), file = log_file_name, append = TRUE, sep = '\n')
+  cat(paste0('seed: ', seed), file = log_file_name, append = TRUE, sep = '\n')
 
   #Check variables
   if(is.character(rawDataFile) != TRUE & is.data.frame(rawDataFile) != TRUE) {stop('ERROR: rawDataFile must be a character string!')}
@@ -85,9 +103,11 @@ DoubletDecon <- function(
   if(is.numeric(num_doubs) != TRUE) {stop('ERROR: numdoubs must be numeric!')}
   if(is.logical(only50) != TRUE) {stop('ERROR: only50 must be TRUE or FALSE!')}
   if(is.numeric(min_uniq) != TRUE) {stop('ERROR: min_uniq must be numeric!')}
+  if(is.integer(seed) != TRUE) {stop('ERROR: seed must be integer!')}
 
   #Read in data
   message('Reading data')
+  cat('Reading data', file = log_file_name, append = TRUE, sep = '\n')
 
   ICGS2_flag <- FALSE #set for checking if the input file is in ICGS2 format
 
@@ -118,7 +138,8 @@ DoubletDecon <- function(
 
   #Clean up data and groups file
   message('Processing raw data')
-  data <- CleanUpInput(rawData = rawData, groups = groups)
+  cat('Processing raw data', file = log_file_name, append = TRUE, sep = '\n')
+  data <- CleanUpInput(rawData = rawData, groups = groups, log_file_name = log_file_name)
   og_processed_data <- data$processed
   groups <- data$groups
 
@@ -132,32 +153,34 @@ DoubletDecon <- function(
   #Original data heatmap
   if (heatmap == TRUE) {
     message('Creating original data heatmap')
+    cat('Creating original data heatmap', file = log_file_name, append = TRUE, sep = '\n')
     breaks <- seq(0, #start point of color key
                   as.numeric(x = quantile(data.matrix(data$processed[2:nrow(x = data$processed), 2:ncol(x = data$processed)]), 0.99)),  #end point of color key
                   by = 0.05) #length of sub-division
-    mycol <- colorpanel(n = length(x = breaks) - 1, low = "black", high = "yellow") #heatmap colors
+    mycol <- colorpanel(n = length(x = breaks) - 1, low = 'black', high = 'yellow') #heatmap colors
     suppressWarnings(DDheatmap(data.matrix(data$processed[2:nrow(x = data$processed), 2:ncol(x = data$processed)]), #the data matrix
                                Colv = FALSE, # No clustering of columns
                                Rowv = FALSE, #no clustering of rows
-                               dendrogram = "none", #do not generate dendrogram
+                               dendrogram = 'none', #do not generate dendrogram
                                col = mycol, #colors used in heatmap
                                ColSideColors = as.color(Renumber(data$processed[1,2:ncol(x = data$processed)]), alpha = 1, seed = 4), #column color bar
                                RowSideColors = as.color(Renumber(data$processed[2:nrow(x = data$processed), 1]), alpha = 1, seed = 2), # row color bar
                                breaks = breaks, #color key details
-                               trace = "none", #no trace on map
+                               trace = 'none', #no trace on map
                                na.rm = TRUE, #ignore missing values
                                margins = c(5, 5), # size and layout of heatmap window
                                labRow = NA, #turn off gene labels
                                labCol = NA, #turn off cell labels
-                               xlab = "Samples", #x axis title
-                               ylab =  "Genes", # y axis title
-                               main = paste0("Original data: ", filename))) #main title
+                               xlab = 'Samples', #x axis title
+                               ylab =  'Genes', # y axis title
+                               main = paste0('Original data: ', filename))) #main title
   }
 
   #Remove cell cycle gene cluster (optional)
   if (removeCC == TRUE) {
     message('Removing cell cycle clusters')
-    data <- RemoveCellCycle(data = data$processed, species = species)
+    cat('Removing cell cycle clusters', file = log_file_name, append = TRUE, sep='\n')
+    data <- RemoveCellCycle(data = data$processed, species = species, log_file_name = log_file_name)
   } else {
     data <- data$processed
   }
@@ -189,12 +212,13 @@ DoubletDecon <- function(
 
   #Calculate doublets using DeconRNASeq
   message('Step 1: Removing possible doublets')
-  if (.Platform$OS.type == "unix") {
-    sink("/dev/null") #hides DeconRNASeq output
-    doubletTable <- IsDoublet(data = data, newMedoids = newMedoids, groups = groups, synthProfiles = synthProfiles)
+  cat('Step 1: Removing possible doublets', file = log_file_name, append = TRUE, sep = '\n')
+  if (.Platform$OS.type == 'unix') {
+    sink('/dev/null') #hides DeconRNASeq output
+    doubletTable <- IsDoublet(data = data, newMedoids = newMedoids, groups = groups, synthProfiles = synthProfiles, log_file_name = log_file_name)
     sink()
   } else {
-    doubletTable <- IsDoublet(data = data, newMedoids = newMedoids, groups = groups, synthProfiles = synthProfiles)
+    doubletTable <- IsDoublet(data = data, newMedoids = newMedoids, groups = groups, synthProfiles = synthProfiles, log_file_name = log_file_name)
   }
   if (write == TRUE) {
     write.table(doubletTable$isADoublet, file = file.path(location, paste0('DRS_doublet_table_', filename, '.txt')), sep = '\t')
@@ -203,6 +227,7 @@ DoubletDecon <- function(
 
   #Recluster doublets and non-doublets
   message('Step 2: Re-clustering possible doublets')
+  cat('Step 2: Re-clustering possible doublets', file = log_file_name, append = TRUE, sep = '\n')
   reclusteredData <- Recluster(isADoublet = doubletTable$isADoublet, data = data, groups = groups)
   data <- reclusteredData$newData2$processed
   groups <- reclusteredData$newData2$groups
@@ -212,13 +237,15 @@ DoubletDecon <- function(
   #Run Pseudo Marker Finder to identify clusters with no unique gene expression
   if (PMF == FALSE) {
     message('SKIPPING Step 3: Rescuing cells with unique gene expression')
+    cat('SKIPPING Step 3: Rescuing cells with unique gene expression', file = log_file_name, append = TRUE, sep = '\n')
     PMFresults <- NULL
   } else {
     message('Step 3: Rescuing cells with unique gene expression')
+    cat('Step 3: Rescuing cells with unique gene expression', file = log_file_name, append = TRUE, sep = '\n')
     if (useFull == TRUE) {
-      PMFresults <- PseudoMarkerFinder(groups = as.data.frame(groups), redu_data2 = file.path(location, paste0('data_processed_reclust_', filename, '.txt')), full_data2 = fullDataFile, min_uniq = min_uniq)
+      PMFresults <- PseudoMarkerFinder(groups = as.data.frame(groups), redu_data2 = file.path(location, paste0('data_processed_reclust_', filename, '.txt')), full_data2 = fullDataFile, min_uniq = min_uniq, log_file_name = log_file_name)
     } else {
-      PMFresults <- PseudoMarkerFinder(groups = as.data.frame(groups), redu_data2 = file.path(location, paste0('data_processed_reclust_', filename, '.txt')), full_data2 = NULL, min_uniq = min_uniq)
+      PMFresults <- PseudoMarkerFinder(groups = as.data.frame(groups), redu_data2 = file.path(location, paste0('data_processed_reclust_', filename, '.txt')), full_data2 = NULL, min_uniq = min_uniq, log_file_name = log_file_name)
     }
     if (write == TRUE) {
       write.table(PMFresults, file = file.path(location, paste0('new_PMF_results_', filename, '.txt')), sep = '\t')
@@ -269,6 +296,7 @@ DoubletDecon <- function(
   #Heatmap of cells removed as doubets
   if (heatmap == TRUE) {
     message('Creating doublets heatmap')
+    cat('Creating doublets heatmap', file = log_file_name, append = TRUE, sep = '\n')
     breaks <- seq(0, #start point of color key
                   as.numeric(quantile(data.matrix(doublets_matrix[2:nrow(x = doublets_matrix), 2:ncol(x = doublets_matrix)]), 0.99)),  #end point of color key
                   by = 0.05) #length of sub-division
@@ -298,6 +326,7 @@ DoubletDecon <- function(
   #New heatmap of non-doublet cells
   if (heatmap == TRUE) {
     message('Creating non-doublets heatmap')
+    cat('Creating non-doublets heatmap', file = log_file_name, append = TRUE, sep = '\n')
     breaks <- seq(0, #start point of color key
                   as.numeric(quantile(data.matrix(nondoublets_matrix[2:nrow(x = nondoublets_matrix), 2:ncol(x = nondoublets_matrix)]), 0.99)),  #end point of color key
                   by = 0.05) #length of sub-division
@@ -320,7 +349,12 @@ DoubletDecon <- function(
                                main = paste0('Non-Doublets: ', filename))) #main title
   }
   #last message
-  message('Finished!', '/n')
+  message('Finished!', '\n')
+  cat('Finished!', file = log_file_name, append = TRUE, sep = '\n')
+
+  #close the log file connection
+  close(log_con)
+
   return(list(data_processed = data,
               groups_processed = groups,
               DRS_doublet_table = doubletTable$isADoublet,

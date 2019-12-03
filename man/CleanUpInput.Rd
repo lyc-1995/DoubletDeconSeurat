@@ -4,7 +4,7 @@
 \alias{CleanUpInput}
 \title{Clean Up Input}
 \usage{
-CleanUpInput(rawData, groups, rowClusters = NULL)
+CleanUpInput(rawData, groups, rowClusters = NULL, log_file_name)
 }
 \arguments{
 \item{rawData}{ICGS expression or counts file (in ICGS expression file format).}
@@ -12,6 +12,8 @@ CleanUpInput(rawData, groups, rowClusters = NULL)
 \item{groups}{ICGS groups file.}
 
 \item{rowClusters}{Optional vector containing row cluster information (used by Recluster). Default is NULL.}
+
+\item{log_file_name}{used for saving run notes to log file}
 }
 \value{
 processed - data.frame of genes by samples with a row of cell clusters (column_clusters-flat) and a column of gene clusters (row_clusters-flat) when available.

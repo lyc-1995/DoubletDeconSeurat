@@ -4,6 +4,7 @@
 #'
 #' @param data Processed data from Clean_Up_Input.
 #' @param species Species as scientific species name, KEGG ID, three letter	species abbreviation, or NCBI ID.
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return data - data.frame with cell cycle gene cluster removed.
 #'
@@ -13,7 +14,8 @@
 #'
 RemoveCellCycle <- function(
   data,
-  species
+  species,
+  log_file_name
 ) {
   #load in table of species names
   data(CCtable)
@@ -24,7 +26,7 @@ RemoveCellCycle <- function(
     #Find the row containing species name information for the provided species
     IDrow <- which(apply(CCtable, 1, function(x) any(grepl(paste0('\\<', species, '\\>'), x))))
 
-    for(rowCluster in 1:(length(x = unique(data[2:nrow(x = data), 1])))){
+    for (rowCluster in 1:(length(x = unique(data[2:nrow(x = data), 1])))){
       genes <- rownames(x = subset(data[2:nrow(x = data), ], data[2:nrow(x = data), 1] == rowCluster)) #get the genes for the row cluster
       sink('/dev/null') #hides mygene output
       geneEquiv <- mygene::queryMany(genes, species = CCtable[IDrow, 4], fields = 'entrezgene', scopes = c('symbol', 'alias', 'name'), return.as = 'DataFrame') #convert to entrezid
@@ -39,6 +41,7 @@ RemoveCellCycle <- function(
       }
     }
   }
+  cat(paste0(ccclust, ' cell cycle clusters removed'), file = log_file_name, append = TRUE, sep = '\n')
   message(paste0(ccclust, ' cell cycle clusters removed'))
   return(data)
 }

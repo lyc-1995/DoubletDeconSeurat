@@ -4,7 +4,7 @@
 \alias{IsDoublet}
 \title{Is A Doublet}
 \usage{
-IsDoublet(data, newMedoids, groups, synthProfiles)
+IsDoublet(data, newMedoids, groups, synthProfiles, log_file_name)
 }
 \arguments{
 \item{data}{Processed data from CleanUpInput (or RemoveCellCycle).}
@@ -14,6 +14,8 @@ IsDoublet(data, newMedoids, groups, synthProfiles)
 \item{groups}{Processed groups file from CleanUpInput.}
 
 \item{synthProfiles}{Average profiles of synthetic doublets from SyntheticDoublets.}
+
+\item{log_file_name}{used for saving run notes to log file}
 }
 \value{
 isADoublet - data.frame with each cell as a row and whether it is called a doublet by deconvolution analysis.

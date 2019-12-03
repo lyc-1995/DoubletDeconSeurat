@@ -6,6 +6,7 @@
 #' @param redu_data2 Processed data from CleanUpInput (or RemoveCellCycle) path, automatically written.
 #' @param full_data2 cleaned full expression matrix from CleanUpInput.
 #' @param min_uniq minimum number of unique genes required for a cluster to be rescued
+#' @param log_file_name used for saving run notes to log file
 #'
 #' @return new_table - non-doublet clusters, as determined by the "Remove" and "Rescue" steps.
 #'
@@ -17,7 +18,8 @@ PseudoMarkerFinder <- function(
   groups,
   redu_data2,
   full_data2,
-  min_uniq = 4
+  min_uniq = 4,
+  log_file_name
 ) {
   #Define the expression file
   if (!is.null(full_data2)) {
@@ -135,6 +137,7 @@ PseudoMarkerFinder <- function(
   summedResults <- table(anovaResultRedu[, 2])
   # cat(paste0('Unique Genes By Cluster: ', summedResults), file = log_file_name, append = TRUE, sep = "\n")
   message(paste0('Unique Genes By Cluster: ', summedResults, ' ', '\n'))
+  cat(paste0('Unique Genes By Cluster: ', summedResults, ' ', '\n'), file = log_file_name, append = TRUE, sep = '\n')
 
   unique_rescued_clusters <- names(summedResults[summedResults >= min_uniq]) #min genes unique
   all_rescued_clusters <- c(as.character(x = unique_rescued_clusters), as.character(x = nonDoublet))
