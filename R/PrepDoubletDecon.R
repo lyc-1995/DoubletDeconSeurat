@@ -59,7 +59,7 @@ PrepDoubletDecon <- function(
   markers <- markers %>% group_by(cluster) %>% top_n(n = top.n, wt = avg_logFC)
 
   #Find and replace "-"
-  colnames(expression) <- gsub("-",".", colnames(x = counts))
+  colnames(expression) <- gsub("-", ".", colnames(x = expression))
   clusters[, 1] <- gsub("-", ".", clusters[, 1])
 
   #Start cluster numbers at 1
@@ -81,7 +81,7 @@ PrepDoubletDecon <- function(
   clusters2 <- clusters[order(clusters[, 1]), , drop = FALSE]
 
   #Reorder columns
-  expression <- expression[, row.names(x = clusters2)]
+  expression <- expression[row.names(x = clusters2)]
 
   #Reorder genes file based on gene cluster number (this will be the new order for the genes)
   markers2 <- markers[order(markers$cluster), ]

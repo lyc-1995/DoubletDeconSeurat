@@ -69,7 +69,7 @@ DoubletDecon <- function(
   suppressMessages(require(stringr)) #for new PMF
 
   #Set up log file
-  log_file_name = file.path(location, filename,'.log')
+  log_file_name <- file.path(location, paste0(filename, '.log'))
   log_con <- file(log_file_name)
   cat(paste0('filename: ', filename), file = log_file_name, append = TRUE, sep = '\n')
   cat(paste0('location: ', location), file = log_file_name, append=TRUE, sep = '\n')
@@ -191,7 +191,7 @@ DoubletDecon <- function(
 
   #Calculate medoids, medoid correlations, blacklist to create new combine medoids
   message('Combining similar clusters')
-  BL <- BlacklistGroups(data = data, groups = groups, rhop = rhop, centroid_flag = centroid_flag)
+  BL <- BlacklistGroups(data = data, groups = groups, rhop = rhop, centroid_flag = centroid_flag, log_file_name = log_file_name)
   newMedoids <- BL$newMedoids
   groupsMedoids <- BL$newGroups
 
@@ -228,7 +228,7 @@ DoubletDecon <- function(
   #Recluster doublets and non-doublets
   message('Step 2: Re-clustering possible doublets')
   cat('Step 2: Re-clustering possible doublets', file = log_file_name, append = TRUE, sep = '\n')
-  reclusteredData <- Recluster(isADoublet = doubletTable$isADoublet, data = data, groups = groups)
+  reclusteredData <- Recluster(isADoublet = doubletTable$isADoublet, data = data, groups = groups, log_file_name = log_file_name)
   data <- reclusteredData$newData2$processed
   groups <- reclusteredData$newData2$groups
   write.table(data, file = file.path(location, paste0('data_processed_reclust_', filename, '.txt')), sep = '\t', col.names = NA, quote = FALSE)
