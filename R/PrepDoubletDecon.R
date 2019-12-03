@@ -38,7 +38,7 @@ PrepDoubletDecon <- function(
   assay <- assay %||% DefaultAssay(object = object)
 
   message('Extracting expression file')
-  expression <- as.data.frame(seuratObject@assays[["RNA"]]@counts)
+  expression <- as.data.frame(GetAssayData(object = object, assay = assay, slot = 'counts'))
 
   message('Extracting clusters')
   if (!is.null(group.by)) {
