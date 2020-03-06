@@ -37,7 +37,7 @@ IsDoublet <- function(
   colnames(x = averagesReal) <- colnames(x = resultsreadable)
   for (clust in 1:length(x = unique(groups[, 2]))) {
     cells <- row.names(x = subset(groups, groups[, 1] == clust))
-    subsetResults <- resultsreadable[row.names(x = resultsreadable) %in% cells,]
+    subsetResults <- resultsreadable[row.names(x = resultsreadable) %in% cells, , drop = FALSE]
     averagesReal[clust, ] <- apply(subsetResults, 2, mean)
   }
 

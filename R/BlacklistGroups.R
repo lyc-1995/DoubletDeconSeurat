@@ -27,9 +27,9 @@ BlacklistGroups <- function(
   clusters <- length(x = unique(groups[, 1]))
   for (cluster in 1:clusters) {
     if (centroid_flag == TRUE) {
-      medoids <- cbind(medoids, apply(data[2:nrow(x = data), which(data[1, ] == cluster)], 1, mean))
+      medoids <- cbind(medoids, apply(data[2:nrow(x = data), which(data[1, ] == cluster), drop = FALSE], 1, mean))
     } else {
-      medoids <- cbind(medoids, apply(data[2:nrow(x = data), which(data[1, ] == cluster)], 1, median))
+      medoids <- cbind(medoids, apply(data[2:nrow(x = data), which(data[1, ] == cluster), drop = FALSE], 1, median))
     }
   }
   medoids <- medoids[, -1]
@@ -84,9 +84,9 @@ BlacklistGroups <- function(
   for (cluster in 1:nunique) { #for each new cluster, assign medoid to new data.frame
     temp <- which(blacklistCluster == uniquelist[cluster])
     if (centroid_flag == TRUE) {
-      newMedoids[, cluster] <- apply(data[2:nrow(x = data), (data[1, ] %in% rownames(x = blacklist_original_order)[temp])], 1, mean) #this is where the original order is critical
+      newMedoids[, cluster] <- apply(data[2:nrow(x = data), (data[1, ] %in% rownames(x = blacklist_original_order)[temp]), drop = FALSE], 1, mean) #this is where the original order is critical
     } else {
-      newMedoids[, cluster] <- apply(data[2:nrow(x = data), (data[1, ] %in% rownames(x = blacklist_original_order)[temp])], 1, median) #this is where the original order is critical
+      newMedoids[, cluster] <- apply(data[2:nrow(x = data), (data[1, ] %in% rownames(x = blacklist_original_order)[temp]), drop = FALSE], 1, median) #this is where the original order is critical
     }
     colnames(x = newMedoids)[cluster] <- paste(rownames(x = blacklist)[temp], collapse = '-') #need to give the columns meaningful names (combination names of combined clusters)
   }
@@ -97,7 +97,7 @@ BlacklistGroups <- function(
   for (cluster in 1:nunique) {
     temp <- which(blacklistCluster == uniquelist[cluster])
     temp1.5 <- as.integer(row.names(x = blacklist_original_order)[temp])
-    temp2 <- groups[groups[, 1] %in% temp1.5, ]
+    temp2 <- groups[groups[, 1] %in% temp1.5, , drop = FALSE]
     temp3 <- cbind(temp2, rep(paste(rownames(x = blacklist)[temp], collapse = '-'), nrow(x = temp2)))
     colnames(x = temp3) <- colnames(x = newGroups)
     newGroups <- rbind(newGroups, temp3)
